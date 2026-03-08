@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var navigateToGame = false
-    @State private var showLeaderboard = false
+    @State private var showGameCenterAlert = false
     @State private var viewModel = GameViewModel()
 
     // Animation
@@ -70,7 +70,7 @@ struct HomeView: View {
                             if GameCenterManager.shared.isAuthenticated {
                                 GameCenterManager.shared.showLeaderboard()
                             } else {
-                                showLeaderboard = true // Fallback local
+                                showGameCenterAlert = true
                             }
                         } label: {
                             Text("LEADERBOARD")
@@ -96,8 +96,10 @@ struct HomeView: View {
             .navigationDestination(isPresented: $navigateToGame) {
                 GameView(viewModel: viewModel)
             }
-            .sheet(isPresented: $showLeaderboard) {
-                LeaderboardView(entries: viewModel.leaderboard)
+            .alert("Game Center", isPresented: $showGameCenterAlert) {
+                Button("OK") {}
+            } message: {
+                Text("Sign in to Game Center in Settings to see the leaderboard.")
             }
             .onAppear {
                 withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1)) {
