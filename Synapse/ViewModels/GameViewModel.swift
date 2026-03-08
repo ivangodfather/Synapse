@@ -60,17 +60,20 @@ final class GameViewModel {
 
         cells[index].isTapped = true
         HapticsManager.shared.light()
+        SoundManager.shared.playCellTone(cellIndex: cell.id, gridSize: gridSize)
 
         if !cell.isActive {
             // Wrong cell — game over
             revealAll()
             phase = .gameOver
             HapticsManager.shared.error()
+            SoundManager.shared.playGameOver()
             saveScore()
         } else if tappedCorrectCount == activeCellCount {
             // All correct!
             phase = .success
             HapticsManager.shared.success()
+            SoundManager.shared.playRoundComplete()
 
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(0.8))
@@ -111,9 +114,17 @@ final class GameViewModel {
     private func startMemorizePhase() {
         phase = .memorize
 
-        // Reveal active cells
-        for i in cells.indices where cells[i].isActive {
+        // Reveal active cells with sequential sound
+        let activeIndices = cells.indices.filter { cells[$0].isActive }
+        for (seq, i) in activeIndices.enumerated() {
             cells[i].isRevealed = true
+            // Stagger the tones slightly for each active cell
+            let delay = Double(seq) * 0.15
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(delay))
+                guard phase == .memorize else { return }
+                SoundManager.shared.playCellTone(cellIndex: cells[i].id, gridSize: gridSize)
+            }
         }
 
         // After display time, switch to recall
