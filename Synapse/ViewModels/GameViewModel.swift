@@ -76,7 +76,7 @@ final class GameViewModel {
             SoundManager.shared.playRoundComplete()
 
             Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.8))
+                try? await Task.sleep(for: .seconds(0.5))
                 guard phase == .success else { return }
                 nextRound()
             }

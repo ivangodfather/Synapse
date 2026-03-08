@@ -26,15 +26,38 @@ struct RoundConfig: Equatable {
     /// Generates a round config based on the current round number
     static func forRound(_ round: Int) -> RoundConfig {
         switch round {
-        case 1...3:
-            return RoundConfig(gridSize: 2, activeCells: min(1 + round - 1, 3), displayTime: 1.5)
-        case 4...7:
-            return RoundConfig(gridSize: 3, activeCells: min(2 + round - 4, 5), displayTime: 1.5)
-        case 8...12:
-            return RoundConfig(gridSize: 4, activeCells: min(3 + round - 8, 8), displayTime: 1.5)
+        case 1:
+            // Start with 2x2, 2 cells — already a real challenge
+            return RoundConfig(gridSize: 2, activeCells: 2, displayTime: 1.2)
+        case 2:
+            return RoundConfig(gridSize: 2, activeCells: 3, displayTime: 1.0)
+        case 3:
+            // Jump to 3x3 fast
+            return RoundConfig(gridSize: 3, activeCells: 3, displayTime: 1.2)
+        case 4:
+            return RoundConfig(gridSize: 3, activeCells: 4, displayTime: 1.0)
+        case 5:
+            return RoundConfig(gridSize: 3, activeCells: 5, displayTime: 0.9)
+        case 6:
+            return RoundConfig(gridSize: 4, activeCells: 4, displayTime: 1.1)
+        case 7:
+            return RoundConfig(gridSize: 4, activeCells: 5, displayTime: 1.0)
+        case 8:
+            return RoundConfig(gridSize: 4, activeCells: 6, displayTime: 0.9)
+        case 9:
+            return RoundConfig(gridSize: 4, activeCells: 7, displayTime: 0.8)
+        case 10:
+            return RoundConfig(gridSize: 5, activeCells: 5, displayTime: 1.0)
+        case 11:
+            return RoundConfig(gridSize: 5, activeCells: 6, displayTime: 0.9)
+        case 12:
+            return RoundConfig(gridSize: 5, activeCells: 7, displayTime: 0.8)
         default:
-            let extra = round - 13
-            return RoundConfig(gridSize: 5, activeCells: min(4 + extra, 12), displayTime: 1.5)
+            // Beyond round 12: 5x5, more cells, less time — gets brutal
+            let extra = round - 12
+            let cells = min(7 + extra, 15)
+            let time = max(0.8 - Double(extra) * 0.05, 0.4)
+            return RoundConfig(gridSize: 5, activeCells: cells, displayTime: time)
         }
     }
 }
